@@ -5,10 +5,9 @@ var updateManager = new updateManagerObject(world);
 var images = [];
 var state = 0; // walking state for cat
 var lastUpdate = Date.now(); // Time sense last update in ms
-function gravity(){
-	player.y+=timePassed/1000*.5;
-}
-var gravity = true;
+
+var jump = false;
+var gravity = false;
 // Add key listener and key states
 var keyMap = {
   68: 'right',
@@ -90,14 +89,29 @@ function updateManagerObject(world) { // manages tick updates
 		// Player movement
 
 
-		if(player.y == .6 && keyStates["up"]==true ){
+		if(gravity==false && keyStates["up"]==true ){
 			movement = true;
-			gravity = false;
-
+			jump = true;
+			while(jump==true){
+				setTimeout(player.y-=timePassed/1000*.5,100);
+				setTimeout(jump=false,10000);
+			}
+			if(jump==false){
+				gravity = true;
+				while(gravity==true){
+					setTimeout(player.y+=timePassed/1000*.5,100);
+					if(player.y + player.h == ground.y){
+						gravity = false;
+					}
+				}
+			}
+			
 			
 		}
 
-
+	
+			
+		
 			
 
 
