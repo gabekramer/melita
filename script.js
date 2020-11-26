@@ -8,18 +8,23 @@ var lastUpdate = Date.now(); // Time sense last update in ms
 
 var jump = false;
 var gravity = false;
+function jump(){
+	
+}
 // Add key listener and key states
 var keyMap = {
   68: 'right',
   65: 'left',
   87: 'up',
-  83: 'down'
+  83: 'down',
+	32: 'jump'
 }
 var keyStates = {
 		left: false,
     right: false,
     up: false,
-    down: false
+    down: false,
+		jump: false
 }
 window.addEventListener("keydown", keydown, false)
 window.addEventListener("keyup", keyup, false)
@@ -87,15 +92,28 @@ function updateManagerObject(world) { // manages tick updates
 		/////////////////
 		var movement = false;
 		// Player movement
+		/*
+		if (keyStates["up"] && player.y>0.5) { // Player jump
+			player.y-=0.3;
+		}
+		if (player.y<0.6) { // fall
+			player.y+=3*timePassed/1000;
+			if (player.y > 0.6) {
+				player.y = 0.6;
+			}
+		}*/
 
-
-		if(gravity==false && keyStates["up"]==true ){
+		
+		
+		if(gravity==false && jump==false && keyStates["up"]==true ){
 			movement = true;
 			jump = true;
 			while(jump==true){
 				setTimeout(player.y-=timePassed/1000*.5,100);
-				setTimeout(jump=false,10000);
+				setTimeout(jump = false,1000);
 			}
+		
+		
 			if(jump==false){
 				gravity = true;
 				while(gravity==true){
@@ -104,10 +122,10 @@ function updateManagerObject(world) { // manages tick updates
 						gravity = false;
 					}
 				}
-			}
-			
-			
+			}	
 		}
+	
+
 
 	
 			
@@ -119,7 +137,7 @@ function updateManagerObject(world) { // manages tick updates
 			movement = true;
 			player.x-=timePassed/1000*0.2;
 		}
-		if (keyStates["right"]==true && player.x<1) {
+		if (keyStates["right"]==true && player.x+player.w<1) {
 			movement = true;
 			player.x+=timePassed/1000*0.2;
 		}
