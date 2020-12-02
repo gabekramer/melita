@@ -1,5 +1,8 @@
 var canvas = document.getElementById('mycanvas');
 var ctx = canvas.getContext("2d");
+function log(){
+	console.log('hello');
+}
 var world = new worldObject();
 var updateManager = new updateManagerObject(world);
 var images = [];
@@ -8,9 +11,7 @@ var lastUpdate = Date.now(); // Time sense last update in ms
 
 var jump = false;
 var gravity = false;
-function jump(){
-	
-}
+
 // Add key listener and key states
 var keyMap = {
   68: 'right',
@@ -92,7 +93,7 @@ function updateManagerObject(world) { // manages tick updates
 		/////////////////
 		var movement = false;
 		// Player movement
-		/*
+/*		
 		if (keyStates["up"] && player.y>0.5) { // Player jump
 			player.y-=0.3;
 		}
@@ -101,28 +102,30 @@ function updateManagerObject(world) { // manages tick updates
 			if (player.y > 0.6) {
 				player.y = 0.6;
 			}
-		}*/
+		}
 
-		
+ */		
 		
 		if(gravity==false && jump==false && keyStates["up"]==true ){
 			movement = true;
 			jump = true;
-			while(jump==true){
-				setTimeout(player.y-=timePassed/1000*.5,100);
-				setTimeout(jump = false,1000);
+			while(jump == true){
+				player.y-=timePassed/1000*0.5;
+				setTimeout(jump = false, 1000);
 			}
+			
+				
 		
-		
+		/*
 			if(jump==false){
 				gravity = true;
 				while(gravity==true){
-					setTimeout(player.y+=timePassed/1000*.5,100);
+					setTimeout(function(){player.y+=5},100);
 					if(player.y + player.h == ground.y){
 						gravity = false;
 					}
 				}
-			}	
+			}	*/
 		}
 	
 
