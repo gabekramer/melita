@@ -99,7 +99,7 @@ function updateManagerObject(world) { // manages tick updates
 		player.y+=timePassed/1000*0.3;
 	}
  	function jump_func(){
-	 		player.y-=timePassed/1000*0.3;
+	 	player.y-=timePassed/1000*0.3;
 			
  	}
 	
@@ -107,21 +107,27 @@ function updateManagerObject(world) { // manages tick updates
 		clearInterval(jump_int);
 		jump = false;
 		gravity = true;
+		
+		
 	}
 	if(gravity==false && jump==false && keyStates["up"]==true ){
 		movement = true;
 		jump = true;
-		jump_int = setInterval(jump_func, 20);
+		var jump_int = setInterval(jump_func, 15);
 		setTimeout(clear_jump, 300);
+
+
+		
 			
 	}
+
 	if (gravity == true){
-		movement = true;
-		var gravity_int = setInterval(gravity_func, 15);
+		var gravity_int = setInterval(gravity_func(), 10);
 		if (player.y + player.h >= ground.y){
 			clearInterval(gravity_int);
 			gravity = false;
 			log();
+			
 		}
 	}
 
