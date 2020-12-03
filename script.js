@@ -92,43 +92,42 @@ function updateManagerObject(world) { // manages tick updates
 		// Update game //
 		/////////////////
 		var movement = false;
-		// Player movement
-/*		
-		if (keyStates["up"] && player.y>0.5) { // Player jump
-			player.y-=0.3;
-		}
-		if (player.y<0.6) { // fall
-			player.y+=3*timePassed/1000;
-			if (player.y > 0.6) {
-				player.y = 0.6;
-			}
-		}
 
- */		
-		
-		if(gravity==false && jump==false && keyStates["up"]==true ){
-			movement = true;
-			jump = true;
-			while(jump == true){
-				player.y-=timePassed/1000*0.5;
-				setTimeout(jump = false, 1000);
-			}
-			
-				
-		
-		/*
-			if(jump==false){
-				gravity = true;
-				while(gravity==true){
-					setTimeout(function(){player.y+=5},100);
-					if(player.y + player.h == ground.y){
-						gravity = false;
-					}
-				}
-			}	*/
-		}
 	
 
+	function gravity_func(){
+		player.y+=timePassed/1000*0.3;
+	}
+ 	function jump_func(){
+	 		player.y-=timePassed/1000*0.3;
+			
+ 	}
+	
+	function clear_jump(){
+		clearInterval(jump_int);
+		jump = false;
+		gravity = true;
+	}
+	if(gravity==false && jump==false && keyStates["up"]==true ){
+		movement = true;
+		jump = true;
+		jump_int = setInterval(jump_func, 20);
+		setTimeout(clear_jump, 300);
+			
+	}
+	if (gravity == true){
+		movement = true;
+		var gravity_int = setInterval(gravity_func, 15);
+		if (player.y + player.h >= ground.y){
+			clearInterval(gravity_int);
+			gravity = false;
+			log();
+		}
+	}
+
+	
+	
+	
 
 	
 			
