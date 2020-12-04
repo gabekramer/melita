@@ -8,9 +8,11 @@ var updateManager = new updateManagerObject(world);
 var images = [];
 var state = 0; // walking state for cat
 var lastUpdate = Date.now(); // Time sense last update in ms
+var dy = 0;
 
 var jump = false;
 var gravity = false;
+
 
 // Add key listener and key states
 var keyMap = {
@@ -44,8 +46,8 @@ images.daisy2 = document.getElementById('daisy2');
 
 // entities
 
-var ground = new entity(images.main_ground, (0), (4/5), (1), (1/5));
-var player = new entity(images.daisy1, (0),(6/10), (2/10)*(1/1.3), (2/10));
+var ground = new entity(images.main_ground, (0), (4/5),  (1),            (1/5));
+var player = new entity(images.daisy1,      (0), (1), (1/10)*(1/1.3), (1/10));
 
 // World init (add entities to world, etc)
 
@@ -54,7 +56,7 @@ world.append(player);
 
 // Main tick
 
-updateManager.startTick(20); // specify the tps
+updateManager.startTick(50); // specify the tps
 
 /////////////////
 /// Functions ///
@@ -92,58 +94,26 @@ function updateManagerObject(world) { // manages tick updates
 		// Update game //
 		/////////////////
 		var movement = false;
-
 	
-
-	function gravity_func(){
-		player.y+=timePassed/1000*0.3;
-	}
- 	function jump_func(){
-	 	player.y-=timePassed/1000*0.3;
-			
- 	}
-	
-	function clear_jump(){
-		clearInterval(jump_int);
-		jump = false;
-		gravity = true;
-		
-		
-	}
-	if(gravity==false && jump==false && keyStates["up"]==true ){
-		movement = true;
-		jump = true;
-		var jump_int = setInterval(jump_func, 15);
-		setTimeout(clear_jump, 300);
-
-
-		
-			
+	if(player.y>=(ground.y-player.h)-0.02 && (keyStates["up"]==true || keyStates["jump"]==true) ){
+		dy=.6;
+		console.log("Jump");
 	}
 
-	if (gravity == true){
-		var gravity_int = setInterval(gravity_func(), 10);
-		if (player.y + player.h >= ground.y){
-			clearInterval(gravity_int);
-			gravity = false;
-			log();
-			
-		}
+	// Update y movement
+	if (dy != 0) {
+		player.y -= dy * (timePassed/1000); // Move the player vert
+		dy -= 1 * (timePassed/1000); // Gravity
 	}
-
 	
-	
-	
-
-	
-			
-		
-			
-
+	if (player.y>(ground.y-player.h)) { // Make sure the player can't fall into the ground
+		dy = 0; // Stop y movement
+		player.y = ground.y-player.h; // Set player to ground
+	}
 
 		if (keyStates["left"]==true && player.x>0) {
 			movement = true;
-			player.x-=timePassed/1000*0.2;
+			player.x-= (timePassed/1000) * 0.2;
 		}
 		if (keyStates["right"]==true && player.x+player.w<1) {
 			movement = true;
