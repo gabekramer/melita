@@ -12,7 +12,7 @@ var dy = 0;
 var intro = true;
 var jump = false;
 var gravity = false;
-
+var map = false;
 
 // Add key listener and key states
 var keyMap = {
@@ -39,7 +39,9 @@ images.logo = document.getElementById('logo');
 images.main_ground = document.getElementById('main_ground');
 images.daisy1 = document.getElementById('daisy1');
 images.daisy2 = document.getElementById('daisy2');
-
+images.lvl1 = document.getElementById('lvl1');
+images.lvl2 = document.getElementById('lvl2');
+images.lvl3 = document.getElementById('lvl3');
 ///////////////////
 // Load entities //
 ///////////////////
@@ -49,9 +51,9 @@ images.daisy2 = document.getElementById('daisy2');
 var logo = new entity(images.logo, (5/10)-((3/10)*(1/1.3)/2), (-1.1), (3/10)*(1/1.3), (3/10));
 var ground = new entity(images.main_ground, (0), (4/5),  (1),            (1/5));
 var player = new entity(images.daisy1,      (0), (1), (1/10)*(1/1.3), (1/10));
-
+var lvl1 = new entity(images.lvl1, 1/20, 1/30, (1/10)*(1/1.3), (1/10));
 // World init (add entities to world, etc)
-
+//world.append(lvl1);
 world.append(logo);
 world.append(ground);
 world.append(player);
@@ -96,10 +98,23 @@ function updateManagerObject(world) { // manages tick updates
 		// Update game //
 		/////////////////
 		var movement = false;
-	
-	if(intro == false && player.y>=(ground.y-player.h)-0.02 && (keyStates["up"]==true || keyStates["jump"]==true) ){
-		dy=.6;
-		console.log("Jump");
+	if(intro == true && keyStates["jump"]==true){
+		player.x = 0;
+		intro = false;
+		logo.w = 0;
+		logo.h = 0;
+		//map = true;
+	}
+
+	if (map == true){
+		player.w = 0;
+		ground.w = 0;
+		lvl1.h = 1/10;
+		world.append(lvl1);
+	}
+	if(intro == false && map == false && player.y>(ground.y-player.h)-0.02 && (keyStates["up"]==true || keyStates["jump"]==true)){
+		dy = .6;
+		
 	}
 	if (logo.y <= (4.9/10)){
 		logo.y += .4 * (timePassed/1000);
@@ -107,16 +122,13 @@ function updateManagerObject(world) { // manages tick updates
 	if(logo.y >= (4.9/10)){
 		logo.y = (4.9/10);	
 	}
-	if(logo.y == (4.9/10) && player.x <= 1){
+	if(logo.y == (4.9/10) && intro == true && player.x <= 1){
 		movement = true;
-		player.x += (timePassed/1000) *
- 		.4	
+		player.x += (timePassed/1000) * .4;	
 	};
-	if(player.x >= 1){
-		ctx.font = '30px Arial'
-		ctx.fillText("Hello World", .5, .5);
-	}
-	// Update y movement
+	
+	// Update y movement 
+	
 	if (dy != 0) {
 		player.y -= dy * (timePassed/1000); // Move the player vert
 		dy -= 1 * (timePassed/1000); // Gravity
@@ -127,14 +139,15 @@ function updateManagerObject(world) { // manages tick updates
 		player.y = ground.y-player.h; // Set player to ground
 	}
 
-		if (intro == false && keyStates["left"]==true && player.x>0) {
+		if (intro == false && map == false && keyStates["left"]==true && player.x>0) {
+			
 			movement = true;
-			player.x-= (timePassed/1000) * 0.2;
+			player.x-= (timePassed/1000) * 0.3;
 		}
-		if (intro == false && keyStates["right"]==true && player.x+player.w<1) {
+		if (intro == false && map == false && keyStates["right"]==true && player.x+player.w<1) {
+			
 			movement = true;
-			player.x+=timePassed/1000*0.2;
-		}
+			player.x+=timePassed/1000*0.3;		}
 		// Cat images state
 		if (movement) {
 			if (state < 1) {
