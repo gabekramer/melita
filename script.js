@@ -13,7 +13,9 @@ var intro = true;
 var jump = false;
 var gravity = false;
 var map = false;
-
+var lvl1_var = false;
+var lvl2_var = false;
+var lvl2_var = false;
 // Add key listener and key states
 var keyMap = {
   68: 'right',
@@ -51,16 +53,21 @@ images.lvl3 = document.getElementById('lvl3');
 var logo = new entity(images.logo, (5/10)-((3/10)*(1/1.3)/2), (-1.1), (3/10)*(1/1.3), (3/10));
 var ground = new entity(images.main_ground, (0), (4/5),  (1),            (1/5));
 var player = new entity(images.daisy1,      (0), (1), (1/10)*(1/1.3), (1/10));
-var lvl1 = new entity(images.lvl1, 1/20, 1/30, (1/10)*(1/1.3), (1/10));
+var lvl1 = new entity(images.lvl1, 1/20, 1/30, (1/15), (0), 1);
+//ad 7/60 to x pos
+var lvl2 = new entity(images.lvl2, (1/6), 1/30, (1/15), (0), 2);
+var lvl3 = new entity(images.lvl3, (17/60), 1/30, (1/15), (0), 3);
 // World init (add entities to world, etc)
-//world.append(lvl1);
+world.append(lvl1);
+world.append(lvl2);
+world.append(lvl3);
 world.append(logo);
 world.append(ground);
 world.append(player);
 
 // Main tick
 
-updateManager.startTick(50); // specify the tps
+updateManager.startTick(50); // specify  the tps
 
 /////////////////
 /// Functions ///
@@ -103,14 +110,34 @@ function updateManagerObject(world) { // manages tick updates
 		intro = false;
 		logo.w = 0;
 		logo.h = 0;
-		//map = true;
+		map = true;
 	}
 
 	if (map == true){
-		player.w = 0;
+		player.h = 0;
 		ground.w = 0;
-		lvl1.h = 1/10;
-		world.append(lvl1);
+		lvl1.h = lvl1.w/canvas.height*canvas.width;
+		lvl2.h = lvl2.w/canvas.height*canvas.width;
+		lvl3.h = lvl3.w/canvas.height*canvas.width;
+	}
+	function lvl1_func(){
+		map = false;
+		lvl1_var = true;
+		player.h = 1/10;
+		ground.w = 1;
+		console.log('hello');
+	}
+	function lvl2_func(){
+		map = false;
+		lvl2_var = true;
+		player.h = 1/10;
+		ground.w = 1;
+	}
+	function lvl3_func(){
+		map = false;
+		lvl2_var = true;
+		player.h = 1/10;
+		ground.w = 1;
 	}
 	if(intro == false && map == false && player.y>(ground.y-player.h)-0.02 && (keyStates["up"]==true || keyStates["jump"]==true)){
 		dy = .6;
@@ -170,7 +197,7 @@ function updateManagerObject(world) { // manages tick updates
 	}
 }
 
-function entity(img, x, y, w, h){ // entities (x,y,w,h are floats repersenting percent)
+function entity(img, x, y, w, h, lvl){ // entities (x,y,w,h are floats repersenting percent)
   this.img = img;
 	this.x = x;
 	this.y = y;
