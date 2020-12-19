@@ -14,6 +14,8 @@ var map = false;
 var lvl1_var = false;
 var lvl2_var = false;
 var lvl2_var = false;
+var gameover = false;
+var contact = false;
 // Add key listener and key states
 var keyMap = {
   68: 'right',
@@ -35,6 +37,10 @@ window.addEventListener("keyup", keyup, false)
 /////////////////
 // Load images //
 /////////////////
+images.peppa_R1 = document.getElementById('peppa_R1');
+images.peppa_R2 = document.getElementById('peppa_R2');
+images.peppa_L1 = document.getElementById('peppa_L1');
+images.peppa_L2 = document.getElementById('peppa_L2');
 images.logo = document.getElementById('logo');
 images.main_ground = document.getElementById('main_ground');
 images.daisy1 = document.getElementById('daisy1');
@@ -52,18 +58,21 @@ images.lvl3 = document.getElementById('lvl3');
 
 var logo = new entity(images.logo, (5/10)-((3/10)*(1/1.3)/2), (-1.1), (3/10)*(1/1.3), (3/10));
 var ground = new entity(images.main_ground, (0), (4/5),  (1),            (1/5));
+var enemy = new entity(images.peppa_R1, (-1), (7/10), (1/10)*(1/1.3), (0));
 var player = new entity(images.daisy1,      (0), (1), (1/10)*(1/1.3), (1/10));
 var lvl1 = new entity(images.lvl1, 1/20, 1/30, (1/15), (0), 1);
 //ad 7/60 to x pos
 var lvl2 = new entity(images.lvl2, (1/6), 1/30, (1/15), (0), 2);
 var lvl3 = new entity(images.lvl3, (17/60), 1/30, (1/15), (0), 3);
 // World init (add entities to world, etc)
+world.append(enemy);
 world.append(lvl1);
 world.append(lvl2);
 world.append(lvl3);
 world.append(logo);
 world.append(ground);
 world.append(player);
+
 
 // Main tick
 
@@ -76,27 +85,24 @@ updateManager.startTick(50); // specify  the tps
 function lvl1_func(){
 	map = false;
 	lvl1_var = true;
-	player.h = 1/10;
-	ground.w = 1;
-	console.log('hello');
+	enemy.x = (1/3);
+	enemy.h = (1/10);
 }
 
 function lvl2_func(){
 	map = false;
 	lvl2_var = true;
-	player.h = 1/10;
-	ground.w = 1;
 }
 function lvl3_func(){
 	map = false;
 	lvl2_var = true;
-	player.h = 1/10;
-	ground.w = 1;
 }
+
 
 //fuck fuck fuck ive tried so much shit
 canvas.addEventListener('click', lvl1_func);
-
+canvas.addEventListener('click', lvl2_func);
+canvas.addEventListener('click', lvl3_func);
 
 function worldObject() { // holds all the objects/entities in the world
 	this.entities = [];
@@ -129,7 +135,7 @@ function updateManagerObject(world) { // manages tick updates
 		/////////////////
 		// Update game //
 		/////////////////
-		var movement = false;
+		var player_movement = false;
 	if(intro == true && keyStates["jump"]==true){
 		player.x = 0;
 		intro = false;
@@ -145,11 +151,27 @@ function updateManagerObject(world) { // manages tick updates
 		lvl2.h = lvl2.w/canvas.height*canvas.width;
 		lvl3.h = lvl3.w/canvas.height*canvas.width;
 	}
-
-	if(intro == false && map == false && player.y(ground.y-player.h)-0.02 && (keyStates["up"]==true || keyStates["jump"]==true)){
-		dy = .6;
-		
+	if (map == false){
+		player.h = (1/10);
+		ground.w = 1;
+		lvl1.h = 0;
+		lvl2.h = 0;
+		lvl3.h = 0;
 	}
+	if(intro == false && map == false && player.y>(ground.y-player.h)-0.02 && (keyStates["up"]==true || keyStates["jump"]==true)){
+		dy = .6;
+	}	
+	var player_bottom = player.y + player.h;
+	var player_width = player.x + player.w;
+	var enemy_bottom = enemy.y + enemy.h;
+	var enemy_width = enemy.x + enemy.w;
+	
+	if(player_width >= enemy.x && player_width <= enemy_width && player_bottom - .02 <= enemy_bottom && player_bottom >= enemy.y ){
+		contact = true;
+		console.log('die');
+	}
+
+	
 	if (logo.y <= (4.9/10)){
 		logo.y += .4 * (timePassed/1000);
 	}
@@ -157,11 +179,11 @@ function updateManagerObject(world) { // manages tick updates
 		logo.y = (4.9/10);	
 	}
 	if(logo.y == (4.9/10) && intro == true && player.x <= 1){
-		movement = true;
+		player_movement = true;
 		player.x += (timePassed/1000) * .4;	
 	};
 	
-	// Update y movement 
+	// Update y player_movement 
 	
 	if (dy != 0) {
 		player.y -= dy * (timePassed/1000); // Move the player vert
@@ -169,21 +191,21 @@ function updateManagerObject(world) { // manages tick updates
 	}
 	
 	if (player.y>(ground.y-player.h)) { // Make sure the player can't fall into the ground
-		dy = 0; // Stop y movement
+		dy = 0; // Stop y player_movement
 		player.y = ground.y-player.h; // Set player to ground
 	}
 
 		if (intro == false && map == false && keyStates["left"]==true && player.x>0) {
 			
-			movement = true;
+			player_movement = true;
 			player.x-= (timePassed/1000) * 0.3;
 		}
 		if (intro == false && map == false && keyStates["right"]==true && player.x+player.w<1) {
 			
-			movement = true;
+			player_movement = true;
 			player.x+=timePassed/1000*0.3;		}
 		// Cat images state
-		if (movement) {
+		if (player_movement) {
 			if (state < 1) {
 				player.img = images.daisy1;
 				state += timePassed/1000*3;
@@ -204,7 +226,7 @@ function updateManagerObject(world) { // manages tick updates
 	}
 }
 
-function entity(img, x, y, w, h, lvl){ // entities (x,y,w,h are floats repersenting percent)
+function entity(img, x, y, w, h){ // entities (x,y,w,h are floats repersenting percent)
   this.img = img;
 	this.x = x;
 	this.y = y;
