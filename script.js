@@ -1,8 +1,6 @@
 var canvas = document.getElementById('mycanvas');
 var ctx = canvas.getContext("2d");
-function log(){
-	console.log('hello');
-}
+
 var world = new worldObject();
 var updateManager = new updateManagerObject(world);
 var images = [];
@@ -48,6 +46,8 @@ images.lvl3 = document.getElementById('lvl3');
 // Load entities //
 ///////////////////
 
+
+
 // entities
 
 var logo = new entity(images.logo, (5/10)-((3/10)*(1/1.3)/2), (-1.1), (3/10)*(1/1.3), (3/10));
@@ -72,6 +72,31 @@ updateManager.startTick(50); // specify  the tps
 /////////////////
 /// Functions ///
 /////////////////
+
+function lvl1_func(){
+	map = false;
+	lvl1_var = true;
+	player.h = 1/10;
+	ground.w = 1;
+	console.log('hello');
+}
+
+function lvl2_func(){
+	map = false;
+	lvl2_var = true;
+	player.h = 1/10;
+	ground.w = 1;
+}
+function lvl3_func(){
+	map = false;
+	lvl2_var = true;
+	player.h = 1/10;
+	ground.w = 1;
+}
+
+//fuck fuck fuck ive tried so much shit
+canvas.addEventListener('click', lvl1_func);
+
 
 function worldObject() { // holds all the objects/entities in the world
 	this.entities = [];
@@ -120,26 +145,8 @@ function updateManagerObject(world) { // manages tick updates
 		lvl2.h = lvl2.w/canvas.height*canvas.width;
 		lvl3.h = lvl3.w/canvas.height*canvas.width;
 	}
-	function lvl1_func(){
-		map = false;
-		lvl1_var = true;
-		player.h = 1/10;
-		ground.w = 1;
-		console.log('hello');
-	}
-	function lvl2_func(){
-		map = false;
-		lvl2_var = true;
-		player.h = 1/10;
-		ground.w = 1;
-	}
-	function lvl3_func(){
-		map = false;
-		lvl2_var = true;
-		player.h = 1/10;
-		ground.w = 1;
-	}
-	if(intro == false && map == false && player.y>(ground.y-player.h)-0.02 && (keyStates["up"]==true || keyStates["jump"]==true)){
+
+	if(intro == false && map == false && player.y(ground.y-player.h)-0.02 && (keyStates["up"]==true || keyStates["jump"]==true)){
 		dy = .6;
 		
 	}
