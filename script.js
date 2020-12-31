@@ -19,8 +19,13 @@ var contact = false;
 var damage = false;
 var enemy1_movement_r = false;
 var enemy1_movement_l = false;
+var jump = false;
 var over_enemy1 = false;
+var land_contact = false;
 var over_land1 = false;
+var over_land2 = false;
+var over_land3 = false;
+var over_land4 = false;
 // Add key listener and key states
 var keyMap = {
   68: 'right',
@@ -66,7 +71,10 @@ images.lvl3 = document.getElementById('lvl3');
 
 
 // entities
-var land1 = new entity(images.dirt, (0), (.65),(1/10), (0) )
+var land1 = new entity(images.dirt, (0), (.65),(1/10), (0) );
+var land2 = new entity(images.dirt, (.0), (.55),(1/10), (0) );
+var land3 = new entity(images.dirt, (0), (.38),(1/10), (0) );
+var land4 = new entity(images.dirt, (.0), (.55),(1/10), (0) );
 var heart1 = new entity(images.heart, (0), (0), (0), (1/30/canvas.height*canvas.width));
 var heart2 = new entity(images.heart, (.038), (0), (0), (1/30/canvas.height*canvas.width));
 var logo = new entity(images.logo, (5/10)-((3/10)*(1/1.3)/2), (-1.1), (3/10)*(1/1.3), (3/10));
@@ -81,6 +89,9 @@ var lvl3 = new entity(images.lvl3, (17/60), 1/30, (1/15), (0), 3);
 // World init (add entities to world, etc)
 world.append(enemy1);
 world.append(land1);
+world.append(land2);
+world.append(land3);
+world.append(land4);
 world.append(heart1);
 world.append(heart2);
 world.append(lvl1);
@@ -105,7 +116,13 @@ function lvl1_func(){
 	map = false;
 	lvl1_var = true;
 	land1.h = 1/30;
+	land2.h = 1/30;
+	land3.h = 1/30;
+	land4.h = 1/30;
 	land1.x = .87;
+	land2.x = .55;
+  land3.x = .87;
+  land4.x = .18;
 	enemy1.x = (1/3);
 	enemy1.h = (1/15);
 	enemy1_movement_r = true;
@@ -191,13 +208,9 @@ function updateManagerObject(world) { // manages tick updates
 
 
 	//collison code
-	var player_bottom = player.y + player.h;
-	var player_width = player.x + player.w;
-	var enemy1_bottom = enemy1.y + enemy1.h;
-	var enemy1_width = enemy1.x + enemy1.w;
-	var land1_width = land1.x + land1.w;
 	
-	if((player_width >= enemy1.x && player_width <= enemy1_width) ||(player.x >= enemy1.x && player.x <= enemy1_width)){
+	
+	if((player.width >= enemy1.x && player.width <= enemy1.width) ||(player.x >= enemy1.x && player.x <= enemy1.width)){
 		over_enemy1 = true;
 	}
 	
@@ -205,26 +218,47 @@ function updateManagerObject(world) { // manages tick updates
 		over_enemy1 = false;
 	}
 
-	if((player_width >= land1.x && player_width <= land1_width) ||(player.x >= land1.x && player.x <= land1_width)){
-		over_land1 = true;
-	}
-	else{
-		over_land1 = false;
-	}
+	if(player.width >= land1.x && player.width <= land1.width ||player.x >= land1.x && player.x <= land1.width){
+    over_land1 = true;
+    over_land3 = true;
+  }
+ 
+  else{
+    over_land1 = false;
+    over_land3 = false;
+  }
 
-	if(over_land1 == true && player_bottom >= land1.y && player_bottom <= land1.y + .1 && dy < 0){
+
+	if(over_land1 == true && player.bottom >= land1.y && player.bottom <= land1.y + .1 && dy < 0){
 		grounded = true;
 	}
 	
 
-	if(over_enemy1 == true && player_bottom >= enemy1.y && player_bottom >= enemy1.y - .1 && dy < 0 ){
+	if(over_enemy1 == true && player.bottom >= enemy1.y && player.bottom >= enemy1.y - .1 && dy < 0 ){
 		enemy1.y = 1;
 		enemy1.h = 0;
 		dy = .3;
 	}
 
+	if(over_land1 == false && player.bottom >= land1.y && player.bottom <= land1.y + .1 ){
+    gravity = true;
+    grounded = false;
+  }
 
-	if(over_enemy1 == true && player_bottom -.02 <= enemy1_bottom && player_bottom >= enemy1.y ){
+	if(over_land1 == true && player.y >= land1.bottom - .1 && player.y <= land1.bottom && dy > 0){
+    dy=0;
+  }
+
+	if(player.width >= land1.x && player.width <= land1.x + .1 && player.bottom <= land1.bottom + player.h && player.bottom >= land1.y ){
+		console.log('meow');
+    grounded = false;
+    land_contact = true;
+  }
+	else{
+		land_contact = false;
+	}
+
+	if(over_enemy1 == true && player.bottom -.02 <= enemy1.bottom && player.bottom >= enemy1.y ){
 		contact = true;
 	}
 	else{
@@ -316,16 +350,20 @@ function updateManagerObject(world) { // manages tick updates
 		}
 
 		if(gameover == false && intro == false && map == false && grounded == true && (keyStates["up"]==true || keyStates["jump"]==true)){
+			jump = true;
 			grounded = false;
 			dy = .6;
-	}	
+		}
+		else{
+			jump = false;
+		}	
 
-		if (gameover == false && intro == false && map == false && keyStates["left"]==true && player.x>0) {
+		if (gameover == false && intro == false && map == false && land_contact == false && keyStates["left"]==true && player.x>0) {
 			
 			player_movement_l = true;
 			player.x-= (timePassed/1000) * 0.3;
 		}
-		if (gameover == false && intro == false && map == false && keyStates["right"]==true && player.x+player.w<1) {
+		if (gameover == false && intro == false && map == false && land_contact == false && keyStates["right"]==true && player.x+player.w<1) {
 			
 			player_movement_r = true;
 			player.x+=timePassed/1000*0.3;		}
@@ -403,6 +441,9 @@ function entity(img, x, y, w, h){ // entities (x,y,w,h are floats repersenting p
 		this.y*canvas.height,
 		this.w*canvas.width, 
 		this.h*canvas.height);
+		this.bottom = this.y + this.h;
+    this.width = this.x + this.w;
+
 	}
 }
 
@@ -419,4 +460,4 @@ function keydown(event) {
 function keyup(event) {
   var key = keyMap[event.keyCode]
   keyStates[key] = false
-}
+}						
