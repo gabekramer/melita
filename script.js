@@ -26,6 +26,8 @@ var over_land1 = false;
 var over_land2 = false;
 var over_land3 = false;
 var over_land4 = false;
+var reeses1_collected = false;
+var all_collected = false;
 // Add key listener and key states
 var keyMap = {
   68: 'right',
@@ -47,7 +49,9 @@ window.addEventListener("keyup", keyup, false)
 /////////////////
 // Load images //
 /////////////////
-images.flag = document.getElementById('flag');
+images.flag1 = document.getElementById('flag1');
+images.flag2 = document.getElementById('flag2');
+images.reeses = document.getElementById('reeses');
 images.peppa_R1 = document.getElementById('peppa_R1');
 images.peppa_R2 = document.getElementById('peppa_R2');
 images.peppa_L1 = document.getElementById('peppa_L1');
@@ -71,6 +75,8 @@ images.lvl3 = document.getElementById('lvl3');
 
 
 // entities
+var reeses1 = new entity(images.reeses, (0), (.51), (1/20)*(1/1.3), (0));
+var flag = new entity(images.flag1, (0), (.31), (1/15)*(1/1.3), (0) );
 var land1 = new entity(images.dirt, (0), (.65),(1/10), (0) );
 var land2 = new entity(images.dirt, (.0), (.55),(1/10), (0) );
 var land3 = new entity(images.dirt, (0), (.38),(1/10), (0) );
@@ -88,6 +94,8 @@ var lvl2 = new entity(images.lvl2, (1/6), (1/30), (1/15), (0), 2);
 var lvl3 = new entity(images.lvl3, (17/60), 1/30, (1/15), (0), 3);
 // World init (add entities to world, etc)
 world.append(enemy1);
+world.append(flag);
+world.append(reeses1);
 world.append(land1);
 world.append(land2);
 world.append(land3);
@@ -123,6 +131,10 @@ function lvl1_func(){
 	land2.x = .55;
   land3.x = .87;
   land4.x = .18;
+	flag.h = 1/15;
+	flag.x = .894;
+	reeses1.h = 1/25;
+	reeses1.x = .21;
 	enemy1.x = (1/3);
 	enemy1.h = (1/15);
 	enemy1_movement_r = true;
@@ -209,7 +221,21 @@ function updateManagerObject(world) { // manages tick updates
 
 	//collison code
 	
+	if(player.bottom <= reeses1.bottom && player.bottom >= reeses1.bottom - .001 && player.width >= reeses1.x && player.x <= reeses1.width){
+		reeses1.h = 0;
+		reeses1_collected = true;
+		all_collected = true;
+	}
 	
+
+	if(all_collected == true){
+		flag.img = images.flag2;
+	}
+
+	if(flag.img == images.flag2 && player.bottom <= flag.bottom && flag.bottom >= flag.bottom - .001 && player.width >= flag.x && player.x <= flag.width){
+		alert('congrats you won but I still need to add the stuff that happens after u win');
+	}
+
 	if((player.width >= enemy1.x && player.width <= enemy1.width) ||(player.x >= enemy1.x && player.x <= enemy1.width)){
 		over_enemy1 = true;
 	}
@@ -266,7 +292,7 @@ function updateManagerObject(world) { // manages tick updates
 	}
 	
 
-	if(over_land2 == false && player.bottom >= land2.y && player.bottom <= land2.y + .1 ){
+	if(over_land2 == false && player.bottom >= land2.y && player.bottom <= land2.y + .1 && player.x >= land2.width && player.x <= land2.width + player.w + .01 || over_land2 == false && player.bottom >= land2.y && player.bottom <= land2.y + .1 && player.width <= land2.y && player.width <= land2.y + player.w + .01){
     gravity = true;
     grounded = false;
   }
@@ -295,6 +321,30 @@ function updateManagerObject(world) { // manages tick updates
 	//land 4
 
 
+	if(player.width >= land4.x + .01 && player.width <= land4.width ||player.x >= land4.x && player.x <= land4.width - .01){
+    over_land4 = true;
+  }
+ 
+  else{
+    over_land4 = false;
+  }
+
+
+	if(over_land4 == true && player.bottom >= land4.y && player.bottom <= land4.y + .1 && dy < 0){
+		player.y = land4.y - player.h;
+		grounded = true;
+	}
+	
+
+	if(over_land4 == false && player.bottom >= land4.y && player.bottom <= land4.y + .1 && player.x >= land4.width && player.x <= land4.width + player.w + .01 || over_land4 == false && player.bottom >= land4.y && player.bottom <= land4.y + .1 && player.width <= land4.y && player.width <= land4.y + player.w + .01){
+    gravity = true;
+    grounded = false;
+  }
+
+	if(over_land4 == true && player.y >= land4.bottom - .1 && player.y <= land4.bottom && dy > 0){
+    dy=0;
+  }
+
 
 //the .1 is to add the gap when player is moviang and the .01 keeps the player x from changing when hitting side of land
 	if(player.width >= land1.x && player.width <= land1.x + .01 && player.bottom <= land1.bottom + player.h && player.bottom >= land1.y +.01){
@@ -314,7 +364,10 @@ function updateManagerObject(world) { // manages tick updates
   }
 
 
-
+	else if(player.bottom <= land4.bottom + player.h && player.bottom >= land4.y +.01 && player.width >= land4.x && player.width <= land4.x + .1|| player.bottom <= land4.bottom + player.h && player.bottom >= land4.y +.01 && player.x <= land4.width && player.x >= land4.width - .01){
+		land_contact = true;
+    grounded = false;	
+  }
 
 	else{
 		land_contact = false;
