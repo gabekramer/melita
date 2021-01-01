@@ -218,7 +218,13 @@ function updateManagerObject(world) { // manages tick updates
 		over_enemy1 = false;
 	}
 
-	if(player.width >= land1.x && player.width <= land1.width ||player.x >= land1.x && player.x <= land1.width){
+	if(over_enemy1 == true && player.bottom >= enemy1.y && player.bottom >= enemy1.y - .1 && dy < 0 ){
+		enemy1.y = 1;
+		enemy1.h = 0;
+		dy = .3;
+	}
+	//land1
+	if(player.width >= land1.x + .01 && player.width <= land1.width ||player.x >= land1.x  && player.x <= land1.width){
     over_land1 = true;
     over_land3 = true;
   }
@@ -228,18 +234,12 @@ function updateManagerObject(world) { // manages tick updates
     over_land3 = false;
   }
 
-
 	if(over_land1 == true && player.bottom >= land1.y && player.bottom <= land1.y + .1 && dy < 0){
+		player.y = land1.y - player.h;
 		grounded = true;
+	
 	}
 	
-
-	if(over_enemy1 == true && player.bottom >= enemy1.y && player.bottom >= enemy1.y - .1 && dy < 0 ){
-		enemy1.y = 1;
-		enemy1.h = 0;
-		dy = .3;
-	}
-
 	if(over_land1 == false && player.bottom >= land1.y && player.bottom <= land1.y + .1 ){
     gravity = true;
     grounded = false;
@@ -249,11 +249,73 @@ function updateManagerObject(world) { // manages tick updates
     dy=0;
   }
 
-	if(player.width >= land1.x && player.width <= land1.x + .1 && player.bottom <= land1.bottom + player.h && player.bottom >= land1.y ){
-		console.log('meow');
-    grounded = false;
-    land_contact = true;
+//land 2
+	
+	if(player.width >= land2.x + .01 && player.width <= land2.width ||player.x >= land2.x && player.x <= land2.width - .01){
+    over_land2 = true;
   }
+ 
+  else{
+    over_land2 = false;
+  }
+
+
+	if(over_land2 == true && player.bottom >= land2.y && player.bottom <= land2.y + .1 && dy < 0){
+		player.y = land2.y - player.h;
+		grounded = true;
+	}
+	
+
+	if(over_land2 == false && player.bottom >= land2.y && player.bottom <= land2.y + .1 ){
+    gravity = true;
+    grounded = false;
+  }
+
+	if(over_land2 == true && player.y >= land2.bottom - .1 && player.y <= land2.bottom && dy > 0){
+    dy=0;
+  }
+	//land3
+
+
+	if(over_land3 == true && player.bottom >= land3.y && player.bottom <= land3.y + .1 && dy < 0){
+		player.y = land3.y - player.h;
+		grounded = true;
+	}
+	
+
+	if(over_land3 == false && player.bottom >= land3.y && player.bottom <= land3.y + .1 ){
+    gravity = true;
+    grounded = false;
+  }
+
+	if(over_land3 == true && player.y >= land3.bottom - .1 && player.y <= land3.bottom && dy > 0){
+    dy=0;
+  }
+
+	//land 4
+
+
+
+//the .1 is to add the gap when player is moviang and the .01 keeps the player x from changing when hitting side of land
+	if(player.width >= land1.x && player.width <= land1.x + .01 && player.bottom <= land1.bottom + player.h && player.bottom >= land1.y +.01){
+		land_contact = true;
+    grounded = false;
+		
+		
+	}
+	else if(player.bottom <= land2.bottom + player.h && player.bottom >= land2.y +.01 && player.width >= land2.x && player.width <= land2.x + .1|| player.bottom <= land2.bottom + player.h && player.bottom >= land2.y +.01 && player.x <= land2.width && player.x >= land2.width - .01){
+		land_contact = true;
+    grounded = false;	
+  }
+
+	else if(player.bottom <= land3.bottom + player.h && player.bottom >= land3.y +.01 && player.width >= land3.x && player.width <= land3.x + .1|| player.bottom <= land3.bottom + player.h && player.bottom >= land3.y +.01 && player.x <= land3.width && player.x >= land3.width - .01){
+		land_contact = true;
+    grounded = false;	
+  }
+
+
+
+
 	else{
 		land_contact = false;
 	}
@@ -318,7 +380,9 @@ function updateManagerObject(world) { // manages tick updates
 		dy = 0;
 		gravity = false;
 	}
-	
+	if(grounded == false){
+		gravity = true;
+	}
 	if (dy != 0) {
 		player.y -= dy * (timePassed/1000); // Move the player vert
 		gravity = true;
@@ -363,10 +427,13 @@ function updateManagerObject(world) { // manages tick updates
 			player_movement_l = true;
 			player.x-= (timePassed/1000) * 0.3;
 		}
-		if (gameover == false && intro == false && map == false && land_contact == false && keyStates["right"]==true && player.x+player.w<1) {
+		if (gameover == false && intro == false && map == false && land_contact == false && keyStates["right"]==true && player.width<1) {
 			
 			player_movement_r = true;
-			player.x+=timePassed/1000*0.3;		}
+			player.x+=timePassed/1000*0.3;	
+			
+		}
+
 		// Cat images state
 		if (player_movement_r) {
 			if (state < 1) {
